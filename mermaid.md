@@ -1,3 +1,33 @@
+Toplevel
+
+```mermaid
+graph TD
+    AP["BCM2712 (AP / 4x Cortex-A76)"]
+    MEM["LPDDR4X SDRAM"]
+    GPU["VideoCore VII GPU"]
+    HDMI["HDMI 0/1 Output"]
+    NVMe["NVMe (PCIe M.2)"]
+    RP1["RP1 Peripheral Controller"]
+    USB["USB 3.0 / 2.0 Ports"]
+    ETH["Gigabit Ethernet"]
+    MIPI["MIPI CSI / DSI"]
+    GPIO["GPIO Header (SPI / I2C / UART / PWM / ADC)"]
+    USD["microSD (SDIO)"]
+
+    AP --> MEM
+    AP --> GPU
+    GPU --> HDMI
+    AP --> NVMe
+    AP -- "PCIe 2.0 x1" --> RP1
+    RP1 --> USB
+    RP1 --> ETH
+    RP1 --> MIPI
+    RP1 --> GPIO
+    RP1 --> USD
+```
+
+
+
 ```mermaid
 flowchart LR
     subgraph PCIeBus["PCIe Bus (BCM2712 ⇄ RP1)"]
