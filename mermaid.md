@@ -26,7 +26,48 @@ graph TD
     RP1 --> USD
 ```
 
+RP1 Block Dig
 
+```mermaid
+graph TD
+    PCIeEP["PCIe Endpoint Controller"]
+    BUS["Internal Interconnect / Bus"]
+    USB3["USB3 Controllers"]
+    ETHMAC["Ethernet MAC"]
+    MIPI2["MIPI CSI / DSI"]
+    SDIO["SDIO Interface"]
+    GPIO2["GPIO"]
+    SPI2["SPI"]
+    I2C2["I2C"]
+    UART2["UART"]
+    PWM2["PWM"]
+    ADC2["ADC"]
+    DMA["DMA Controller"]
+    SSRAM["Shared SRAM (64KB)"]
+    LSRAM["Local SRAM"]
+    BOOT["Boot ROM"]
+    CLK["Clock / Reset Control"]
+
+    PCIeEP --> BUS
+    BUS --> USB3
+    BUS --> ETHMAC
+    BUS --> MIPI2
+    BUS --> SDIO
+    BUS --> GPIO2
+    BUS --> SPI2
+    BUS --> I2C2
+    BUS --> UART2
+    BUS --> PWM2
+    BUS --> ADC2
+    BUS --> DMA
+    DMA --> SSRAM
+    DMA --> LSRAM
+    BOOT --> BUS
+    CLK --> BUS
+
+
+
+```
 
 ```mermaid
 flowchart LR
