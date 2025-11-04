@@ -69,6 +69,42 @@ graph TD
 
 ```
 
+Internal AP
+
+```mermaid
+flowchart TB
+  subgraph CLUSTER["BCM2712 Core Cluster"]
+    C0["Cortex-A76 Core 0\nL1I + L1D"] --> L2_0["L2 (Private)"]
+    C1["Cortex-A76 Core 1\nL1I + L1D"] --> L2_1["L2 (Private)"]
+    C2["Cortex-A76 Core 2\nL1I + L1D"] --> L2_2["L2 (Private)"]
+    C3["Cortex-A76 Core 3\nL1I + L1D"] --> L2_3["L2 (Private)"]
+  end
+
+  L3S["L3 (Shared)"]
+  FAB["System Fabric (AXI / NoC)"]
+  MEMC["LPDDR4X Memory Controller"]
+  RAM["LPDDR4X SDRAM"]
+  VCGPU["VideoCore VII GPU"]
+  DISP["Display Controller"]
+  PCIE["PCIe 2.0 Controller"]
+
+  L2_0 --> L3S
+  L2_1 --> L3S
+  L2_2 --> L3S
+  L2_3 --> L3S
+
+  L3S --> FAB
+  VCGPU --> FAB
+  PCIE --> FAB
+  FAB --> MEMC
+  MEMC --> RAM
+  VCGPU --> DISP
+
+
+
+```
+
+
 ```mermaid
 flowchart LR
     subgraph PCIeBus["PCIe Bus (BCM2712 ⇄ RP1)"]
