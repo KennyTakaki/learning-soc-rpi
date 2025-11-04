@@ -99,10 +99,28 @@ flowchart TB
   FAB --> MEMC
   MEMC --> RAM
   VCGPU --> DISP
-
-
-
 ```
+
+Internal A-core
+```mermaid
+flowchart TB
+  subgraph Core["Cortex-A76 Core"]
+    L1I["L1 Instruction Cache (64KB)"]
+    L1D["L1 Data Cache (64KB)"]
+    REG["Registers / Pipeline"]
+    REG --> L1I
+    REG --> L1D
+  end
+
+  L2["L2 Cache (Per-Core, 512KB)"]
+  L3["L3 Cache (Shared)"]
+  MEM["LPDDR4X Memory"]
+
+  Core --> L2
+  L2 --> L3
+  L3 --> MEM
+```
+
 
 
 ```mermaid
