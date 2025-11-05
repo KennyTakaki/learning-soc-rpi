@@ -207,3 +207,60 @@ flowchart TB
   RP1 --> DISP
   PHY -->|RGMII| ETH
 ```
+
+④ 通信系統図（データフロー／バス構造図）
+```mermaid
+flowchart LR;
+subgraph AP["BCM2712 AP"];
+CPU1["Cortex-A76 x4"];
+GPU1["VideoCore VII"];
+MEM1["LPDDR4X SDRAM"];
+AXI1["AXI / AHB fabric"];
+end;
+
+subgraph RP1["RP1 peripheral controller"];
+PCIE1["PCIe controller Gen2 x4"];
+USB3H["USB 3.0 x2 (5 Gbps)"];
+USB2H["USB 2.0 x2 (480 Mbps)"];
+ETH1["Gigabit Ethernet MAC (1 Gbps)"];
+CSI1["MIPI CSI-2"];
+DSI1["MIPI DSI"];
+SDIO1["microSD SDR104 (104 MBps)"];
+end;
+
+subgraph EXT["External peripherals"];
+CAM["Camera module"];
+DISP["Display panel"];
+USBDEV["USB devices / storage"];
+LAN["LAN cable"];
+SDC["SD card"];
+end;
+
+CPU1<-->AXI1;
+GPU1<-->AXI1;
+MEM1<-->AXI1;
+
+AXI1-- "PCIe 2.0 x4 (~16-20 Gbps)" ---PCIE1;
+
+PCIE1-->USB3H;
+PCIE1-->USB2H;
+PCIE1-->ETH1;
+PCIE1-->CSI1;
+PCIE1-->DSI1;
+PCIE1-->SDIO1;
+
+USB3H-->USBDEV;
+USB2H-->USBDEV;
+ETH1-->LAN;
+CSI1-->CAM;
+DSI1-->DISP;
+SDIO1-->SDC;
+
+USB3H-. "DMA" .->MEM1;
+ETH1-. "DMA" .->MEM1;
+SDIO1-. "DMA" .->MEM1;
+CSI1-. "DMA" .->MEM1;
+GPU1-. "framebuffer DMA" .->MEM1;
+
+
+```
