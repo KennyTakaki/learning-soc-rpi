@@ -263,7 +263,8 @@ CSI1-. "DMA" .->MEM1;
 GPU1-. "framebuffer DMA" .->MEM1;
 ```
 
-⑤ コアレベル図（Cortex-A76 / Cortex-M0+ など）
+⑤ コアレベル図（Cortex-A76 / Cortex-M0+ など）  
+Cortex-A76 パイプラインとキャッシュ階層
 ```mermaid
 flowchart LR
   %% ===== Cortex-A76: 命令処理とメモリ階層 =====
@@ -303,6 +304,45 @@ flowchart LR
   CC -. info .- NOTE
 
   classDef note fill:#fff,stroke:#999,stroke-dasharray:3 3,color:#333;
+```
+Aコア × Mコア 役割分担と通信
+```mermaid
+flowchart LR
+  %% ===== Cortex-A76: 命令処理とメモリ階層 =====
+  subgraph A76["Cortex-A76 Core"]
+    F[Fetch]
+    D[Decode and Rename]
+    IS[Dispatch and Issue]
+    EX[Execute: ALU・FP・LoadStore]
+    CM[Commit and Retire]
+    IRQI[CPU Interface for IRQ]
+    F --> D --> IS --> EX --> CM
+  end
 
+  subgraph Private["Private Caches per core"]
+    L1I[L1I Instruction Cache]
+    L1D[L1D Data Cache]
+    L2[L2 Cache]
+  end
 
+  %% 参照経路（点線）
+  F -. instruction .-> L1I
+  EX -. data .-> L1D
+
+  %% キャッシュ階層と一貫性
+  L1I <--> L2
+  L1D <--> L2
+  L2 <--> CC[Coherent Interconnect]
+  CC <--> SC[System Cache or L3]
+  CC <--> MEM[Main Memory]
+  CC <--> IO[Other Coherent Agents]
+
+  %% 割り込み経路
+  GIC[GIC Distributor and CPU Interface] -->|IRQ| IRQI
+
+  %% 注釈ノード（点線で紐づけ）
+  NOTE[Coherency is kept by snoop via interconnect]:::note
+  CC -. info .- NOTE
+
+  classDef note fill:#fff,stroke:#999,stroke-dasharray:3 3,color:#333;
 ```
