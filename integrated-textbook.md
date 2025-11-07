@@ -64,8 +64,8 @@ flowchart TD
 - CSI/DSI/HDMI/USB/GPIOの役割と位置づけを整理できる
 
 **実施チェックラン**  
-- [ ] Pi 5 の**ブロック図**を自作（CPU/GPU/ISP/DDR/PCIe/USB/CSI/DSI/HDMI/GPIO）  
-- [ ] **電源**（5V/5A）・**映像**（micro-HDMI 4K60×2）・**ストレージ**（microSD/PCIe-NVMe）を確認  
+- [x] Pi 5 の**ブロック図**を自作（CPU/GPU/ISP/DDR/PCIe/USB/CSI/DSI/HDMI/GPIO）  
+- [x] **電源**（5V/5A）・**映像**（micro-HDMI 4K60×2）・**ストレージ**（microSD/PCIe-NVMe）を確認  
 - [ ] NVMe HATやUSB3構成の**配線案**を描いた
 
 **頭の中で動かす（思考実験）**  
