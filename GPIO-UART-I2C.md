@@ -37,3 +37,26 @@ flowchart LR
 
     ControlPlane --> DataPlane
 ```
+
+```mermaid
+flowchart TB
+    subgraph Control["🎛 コントロールプレーン（Control Plane）"]
+        CPU["CPU / カーネルドライバ"]
+        GPIO["GPIO：電源ON/OFFやリセット制御"]
+        I2C["I²C：センサ設定（露光時間・ゲインなど）"]
+        UART["UART / SPI：通信・デバッグ"]
+        CPU --> GPIO
+        CPU --> I2C
+        CPU --> UART
+    end
+
+    subgraph Data["🎥 データプレーン（Data Plane）"]
+        Sensor["📷 カメラセンサ（RAW出力）"]
+        MIPI["MIPI-CSI PHY：高速シリアル伝送"]
+        ISP["ISPブロック：デモザイク / AWB / ノイズ除去"]
+        GPU["GPU / メモリ（DMA経由転送）"]
+        Sensor --> MIPI --> ISP --> GPU
+    end
+
+    Control -->|設定・制御| Data
+```
