@@ -22,3 +22,18 @@ flowchart TD
     Pin -->|Mode2| PWM
 
 ```
+
+```mermaid
+flowchart LR
+    subgraph ControlPlane["コントロールプレーン"]
+        CPU["CPU / ドライバ"] --> I2C["I²C (制御信号)"]
+        CPU --> GPIO["GPIO (電源/リセット)"]
+    end
+
+    subgraph DataPlane["データプレーン"]
+        Sensor["📷 カメラセンサ (RAW出力)"] --> CSI["MIPI-CSI RX (高速データレーン)"]
+        CSI --> ISP["ISP / GPU (画像処理ブロック)"]
+    end
+
+    ControlPlane --> DataPlane
+```
