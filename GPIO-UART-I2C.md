@@ -13,3 +13,12 @@ Linuxの **ドライバ（GPIOサブシステム）** がMMIO（Memory-Mapped I/
 Linuxでは、ハードウェアもファイルとして抽象化されています。
 つまり /sys/class/gpio/gpio18/value に “1” を書くのは、
 「このピンに高電圧（HIGH）を出せ」という指令です。
+
+Raspberry PiのSoCピンは、1本の線が複数の機能を持ちます。  
+```mermaid
+flowchart TD
+    Pin["物理ピン (例: GPIO14)"] -->|Mode0| UART_TX
+    Pin -->|Mode1| GPIO_OUT
+    Pin -->|Mode2| PWM
+
+```
