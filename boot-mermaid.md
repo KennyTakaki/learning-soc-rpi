@@ -60,3 +60,13 @@ flowchart TD
     P2 -->|マウント| OS2
     OS1 --> OS3
 ```
+
+```mermaid
+flowchart LR
+    Power["🔌 電源ON"] --> BootROM["🧩 BootROM（SoC内）"]
+    BootROM --> GPU["🎞 GPUファームウェア起動<br/>メモリ/クロック初期化"]
+    GPU --> ResetCtrl["🔁 リセットコントローラ"]
+    ResetCtrl --> CPU0["💡 CPUコア0 リセット解除<br/>最初の命令を実行"]
+    CPU0 --> CPU1["⚙️ 他コアを起こす (SMP起動)"]
+    CPU1 --> Kernel["🐧 Linuxカーネルが動作開始"]
+```
