@@ -5,3 +5,7 @@ flowchart LR
     MMIO --> PAD["物理ピン<br/>(GPIOヘッダ)"]
     PAD --> DEVICE["LED・センサ・外部マイコン等"]
 ```
+CPUは直接ピンを操作できません。
+
+Linuxの **ドライバ（GPIOサブシステム）** がMMIO（Memory-Mapped I/O）経由でSoCのレジスタを書き換え、
+その結果、物理ピンに電圧が出たり消えたりします。
