@@ -34,3 +34,29 @@ flowchart TD
   I --> J["ユーザ空間 (login, services)"]
 
 ```
+
+
+```mermaid
+flowchart TD
+    subgraph SD["📀 microSDカード"]
+        P1["第1パーティション<br/>/dev/mmcblk0p1<br/>FAT32（約256MB）<br/>ブート専用領域"]
+        P2["第2パーティション<br/>/dev/mmcblk0p2<br/>ext4（数GB〜）<br/>rootfs（Linux本体）"]
+    end
+
+    subgraph FW["起動前（GPU/Bootloaderフェーズ）"]
+        FW1["BootROM → SPI EEPROM"]
+        FW2["GPU FW (start.elf) がP1を直接読み込み"]
+        FW3["config.txt / kernel8.img / .dtb を取得"]
+    end
+
+    subgraph OS["起動後（Linuxフェーズ）"]
+        OS1["P1 が /boot にマウント"]
+        OS2["P2 が / にマウント"]
+        OS3["Linuxカーネルが rootfs を操作開始"]
+    end
+
+    FW -->|ブート時に読む| P1
+    P1 -->|マウント| OS1
+    P2 -->|マウント| OS2
+    OS1 --> OS3
+```
