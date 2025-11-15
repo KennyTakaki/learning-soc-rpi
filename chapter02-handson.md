@@ -94,3 +94,34 @@ kenny@raspberrypi:~ $ dmesg | grep -i v3d
 [    0.835309] v3d 1002000000.v3d: [drm] Transparent Hugepage support is recommended for optimal performance on this platform!
 [    0.841825] [drm] Initialized v3d 1.0.0 for 1002000000.v3d on minor 0
 ```
+
+## Kernelとファームウェアの関係
+Linux Kernel
+ ├─ Driver（RP1）
+ │    └─ RP1 firmware に接続し、バージョン取得・初期化ログを出す
+ │
+ ├─ Driver（Wi-Fi/brcmfmac）
+ │    ├─ /lib/firmware/ からファームを読み込み
+ │    ├─ デバイスに書き込み（アップロード）
+ │    └─ バージョン情報やエラーを dmesg に出す
+ │
+ ├─ Driver（Bluetooth/hci_bcm）
+ │    ├─ パッチファイルを探す
+ │    ├─ ロード成功/失敗をログに記録
+ │    └─ 動作準備ができたら HCI デバイスとして登録
+
+
+ブートローダーは OS を起動できる状態までハードウェアを準備し、OS に制御を渡すための前座
+Kernelはハードウェアを抽象化する。ハードウェアをOS内につないでアプリから利用可能にするための管理を行う。
+
+【電源 ON】
+     ↓
+BootROM
+     ↓
+──── Bootloader（ハードの初期化、カーネルの準備） ────
+     ↓
+Linux Kernel（OSの心臓）
+     ↓
+systemd（ユーザ空間）
+     ↓
+アプリケーション
