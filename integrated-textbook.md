@@ -93,10 +93,10 @@ flowchart TD
 - `/proc/device-tree`と`dmesg`から**実機構成を読み解く**
 
 **実施チェックラン**  
-- [ ] ブートローダとカーネルの**役割**を説明  
-- [ ] `cat /proc/device-tree/model` を確認  
-- [ ] `dmesg`で**カメラ/ISP/PCIe**初期化ログを探索  
-- [ ] `/boot`, `/lib/modules`, `/proc` の**役割**を整理
+- [x] ブートローダとカーネルの**役割**を説明  
+- [x] `cat /proc/device-tree/model` を確認  
+- [x] `dmesg`で**カメラ/ISP/PCIe**初期化ログを探索  
+- [x] `/boot`, `/lib/modules`, `/proc` の**役割**を整理
 
 **思考実験：想定コマンドと観察ポイント**
 ```bash

@@ -125,3 +125,169 @@ Linux Kernel（OSの心臓）
 systemd（ユーザ空間）
      ↓
 アプリケーション
+
+# `/boot`, `/lib/modules`, `/proc` の**役割**を整理
+/boot
+GPUファームがFAT32のパーティションにあるデータをもとにbootした結果、Linux 上では /boot として表現されている。
+
+/lib/modules
+カーネルは2種類のドライバを扱う。built-inかloadable modules（*.ko）　　
+このうちloadable modulesを保存しているが/lib/modules/<kernel version>
+
+```
+kenny@raspberrypi:~ $ ls /lib/modules
+6.12.25+rpt-rpi-2712  6.12.25+rpt-rpi-v8  6.12.47+rpt-rpi-2712  6.12.47+rpt-rpi-v8
+```
+
+４つのカーネルがあるが、実際には起動しているカーネルと一致しているものが利用されている。他は過去バージョンのものだったり。
+
+```
+kenny@raspberrypi:~ $ uname -r
+6.12.47+rpt-rpi-2712
+```
+
+----
+① カーネル or udev が .ko を自動ロードする
+② insmod / modprobe が .ko をカーネル空間に読み込む
+③ ドライバの init() / probe() が実行される
+④ デバイスにマッチし、バインドされる
+⑤ /proc/modules に登録される
+⑥ dmesg に “probe” ログが出る
+
+https://www.aps-web.jp/academy/linux-rtos/wr-linux/23638/
+
+----
+ユーザ空間（userland）
+
+/usr/bin/modprobe   ← 実行ファイル（コマンド）
+    ↓ 依存解析/alias解決
+    ↓ カーネルへロード要求 (system call)
+
+カーネル空間（kernel space）
+
+-----------------------------------------
+
+init_module() / finit_module()
+    ↓
+モジュールをメモリに配置
+    ↓
+シンボルのリンク
+    ↓
+モジュールの init() 実行
+    ↓
+デバイスにマッチすれば probe() 実行
+
+----
+
+
+カーネルに読み込まれているモジュール一覧
+
+```
+cat /proc/modulesの結果
+```
+
+<名前> <サイズ> <使用カウント> <依存モジュール> <状態> <メモリアドレス>
+
+実際のファイル /lib/modules/$(uname -r)/... にあるrfcomm.ko, snd_seq.ko などに対応する。
+
+<details>
+kenny@raspberrypi:~ $ cat /proc/modules
+rfcomm 81920 4 - Live 0x0000000000000000
+snd_seq_dummy 49152 0 - Live 0x0000000000000000
+snd_hrtimer 49152 1 - Live 0x0000000000000000
+snd_seq 98304 7 snd_seq_dummy, Live 0x0000000000000000
+snd_seq_device 49152 1 snd_seq, Live 0x0000000000000000
+algif_hash 49152 1 - Live 0x0000000000000000
+algif_skcipher 49152 1 - Live 0x0000000000000000
+af_alg 49152 6 algif_hash,algif_skcipher, Live 0x0000000000000000
+bnep 49152 2 - Live 0x0000000000000000
+binfmt_misc 49152 1 - Live 0x0000000000000000
+spidev 49152 0 - Live 0x0000000000000000
+brcmfmac_wcc 49152 0 - Live 0x0000000000000000
+aes_ce_blk 49152 4 - Live 0x0000000000000000
+aes_ce_cipher 49152 1 aes_ce_blk, Live 0x0000000000000000
+ghash_ce 49152 0 - Live 0x0000000000000000
+gf128mul 49152 1 ghash_ce, Live 0x0000000000000000
+sha2_ce 49152 0 - Live 0x0000000000000000
+sha256_arm64 49152 1 sha2_ce, Live 0x0000000000000000
+brcmfmac 376832 1 brcmfmac_wcc, Live 0x0000000000000000
+brcmutil 49152 1 brcmfmac, Live 0x0000000000000000
+sha1_ce 49152 0 - Live 0x0000000000000000
+rpi_hevc_dec 65536 0 - Live 0x0000000000000000
+cfg80211 1032192 1 brcmfmac, Live 0x0000000000000000
+pisp_be 49152 0 - Live 0x0000000000000000
+sha1_generic 49152 1 sha1_ce, Live 0x0000000000000000
+v4l2_mem2mem 65536 1 rpi_hevc_dec, Live 0x0000000000000000
+videobuf2_dma_contig 49152 2 rpi_hevc_dec,pisp_be, Live 0x0000000000000000
+videobuf2_memops 49152 1 videobuf2_dma_contig, Live 0x0000000000000000
+videobuf2_v4l2 49152 3 rpi_hevc_dec,pisp_be,v4l2_mem2mem, Live 0x0000000000000000
+videodev 344064 4 rpi_hevc_dec,pisp_be,v4l2_mem2mem,videobuf2_v4l2, Live 0x0000000000000000
+raspberrypi_hwmon 49152 0 - Live 0x0000000000000000
+videobuf2_common 98304 6 rpi_hevc_dec,pisp_be,v4l2_mem2mem,videobuf2_dma_contig,videobuf2_memops,videobuf2_v4l2, Live 0x0000000000000000
+mc 81920 6 rpi_hevc_dec,pisp_be,v4l2_mem2mem,videobuf2_v4l2,videodev,videobuf2_common, Live 0x0000000000000000
+i2c_brcmstb 49152 0 - Live 0x0000000000000000
+spi_bcm2835 49152 0 - Live 0x0000000000000000
+gpio_keys 49152 0 - Live 0x0000000000000000
+rp1_pio 65536 0 - Live 0x0000000000000000
+pwm_fan 49152 0 - Live 0x0000000000000000
+raspberrypi_gpiomem 49152 0 - Live 0x0000000000000000
+rp1_adc 49152 0 - Live 0x0000000000000000
+rp1_fw 49152 1 rp1_pio, Live 0x0000000000000000
+rp1_mailbox 49152 1 - Live 0x0000000000000000
+nvmem_rmem 49152 0 - Live 0x0000000000000000
+i2c_dev 49152 0 - Live 0x0000000000000000
+ledtrig_pattern 49152 0 - Live 0x0000000000000000
+fuse 196608 5 - Live 0x0000000000000000
+dm_mod 163840 0 - Live 0x0000000000000000
+ip_tables 65536 0 - Live 0x0000000000000000
+x_tables 81920 1 ip_tables, Live 0x0000000000000000
+ipv6 606208 52 [permanent], Live 0x0000000000000000
+vc4 425984 9 - Live 0x0000000000000000
+snd_soc_hdmi_codec 49152 2 - Live 0x0000000000000000
+snd_soc_core 311296 2 vc4,snd_soc_hdmi_codec, Live 0x0000000000000000
+snd_compress 49152 1 snd_soc_core, Live 0x0000000000000000
+snd_pcm_dmaengine 49152 1 snd_soc_core, Live 0x0000000000000000
+snd_pcm 147456 4 snd_soc_hdmi_codec,snd_soc_core,snd_compress,snd_pcm_dmaengine, Live 0x0000000000000000
+snd_timer 65536 3 snd_hrtimer,snd_seq,snd_pcm, Live 0x0000000000000000
+snd 131072 9 snd_seq,snd_seq_device,snd_soc_hdmi_codec,snd_soc_core,snd_compress,snd_pcm,snd_timer, Live 0x0000000000000000
+hci_uart 65536 0 - Live 0x0000000000000000
+btbcm 49152 1 hci_uart, Live 0x0000000000000000
+drm_display_helper 49152 1 vc4, Live 0x0000000000000000
+bluetooth 638976 33 rfcomm,bnep,hci_uart,btbcm, Live 0x0000000000000000
+libaes 49152 4 aes_ce_blk,aes_ce_cipher,ghash_ce,bluetooth, Live 0x0000000000000000
+rfkill 49152 6 cfg80211,bluetooth, Live 0x0000000000000000
+ecdh_generic 49152 2 bluetooth, Live 0x0000000000000000
+v3d 212992 5 - Live 0x0000000000000000
+drm_dma_helper 49152 1 vc4, Live 0x0000000000000000
+drm_shmem_helper 49152 1 v3d, Live 0x0000000000000000
+cec 65536 1 vc4, Live 0x0000000000000000
+ecc 65536 1 ecdh_generic, Live 0x0000000000000000
+drm_kms_helper 245760 3 vc4,drm_dma_helper,drm_shmem_helper, Live 0x0000000000000000
+gpu_sched 98304 1 v3d, Live 0x0000000000000000
+drm 688128 16 vc4,drm_display_helper,v3d,drm_dma_helper,drm_shmem_helper,drm_kms_helper,gpu_sched, Live 0x0000000000000000
+drm_panel_orientation_quirks 65536 1 drm, Live 0x0000000000000000
+backlight 49152 2 drm_kms_helper,drm, Live 0x0000000000000000
+uio_pdrv_genirq 49152 0 - Live 0x0000000000000000
+uio 49152 1 uio_pdrv_genirq, Live 0x0000000000000000
+</details>
+
+
+/proc/modules と lsmod / modprobe / insmod の関係
+
+/proc/modules
+→ 「今ロードされているモジュール一覧」を
+カーネルが用意している擬似ファイル。
+cat で読むだけ（ユーザ空間の通常のプログラム）。
+
+lsmod
+→ 中身はほぼ /proc/modules の見やすい表示。
+
+insmod
+→ 指定した .ko を 無理やり1個だけ カーネルに挿すツール
+（依存関係の解決は自分でやる必要がある）。
+
+modprobe
+→ 「名前」を渡すと、依存関係も含めて /lib/modules 以下から
+.ko を探してよしなにロードしてくれる賢いツール。
+→ これは ユーザランドのプログラム で、
+システムコールを使ってカーネルに「このモジュール入れて」と頼む。
