@@ -392,6 +392,14 @@ v4l2-ctl -d /dev/video0 --stream-mmap --stream-count=60 --stream-to=frame.raw
 ```
 学び：**I²C**はセンサ設定、**CSI2**は高速データ搬送、**V4L2**はユーザ空間の標準API。
 
+**参考**
+
+https://www.youtube.com/watch?v=ziBRtB8E6Ps&t=193s
+https://www.indoorcorgielec.com/resources/raspberry-pi/camera-setup/
+
+よめ：https://zenn.dev/thorie/scraps/663b022248e67a　☆
+
+よめ：https://docs.freenove.com/projects/fnk0056/en/latest/fnk0056/codes/tutorial/Get_Started.html　☆
 ---
 
 ## 📒 第5章：ISP理解とGStreamer
